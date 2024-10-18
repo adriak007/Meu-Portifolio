@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Adriano JR</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>Adriano Da Silva Dantas Júnior</h1>
+        <h2>Desenvolvedor Web | Empresario</h2>
+    </header>
+
+    <nav>
+        <a href="#about">Sobre Mim</a>
+        <a href="#projects">Projetos</a>
+        <a href="#contact">Contato</a>
+    </nav>
+
+    <section id="about" class="about">
+        <h2>Sobre Mim</h2>
+        <div class="about-images">
+            <img src="images/foto.jpg" alt="Adriano JR">
+        </div>
+        <p>Olá! Sou Adriano JR, desenvolvedor web e Empresario, aluno do curso de ADS na Faculdades Integradas de Patos FIP.</p>
+    </section>
+
+    <section id="projects" class="projects">
+        <h2>Meus Projetos</h2>
+        <div class="project">
+            <img src="images/five.png" alt="Projeto 1">
+            <h3>The FIVE</h3>
+            <p>Este é o projeto voltado á o mundo do e-commerce que temos como base o FIVE, remetendo aos 5 participantes do grupo que cada um tem sua parte no projeto.</p>
+        </div>
+        <div class="project">
+            <img src="images/notas.png" alt="Projeto 2">
+            <h3>Notas</h3>
+            <p>Projeto realizado dentro da própria matéria de Autoria Web proposto pela professora Keila.</p>
+        </div>
+        <div class="project">
+            <img src="images/login.png" alt="Projeto 3">
+            <h3>Login</h3>
+            <p>Como um desafio para a turma foi proposto uma tela de login em HTML e CSS.</p>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <p>Entre em contato comigo:</p>
+        <div class="floating-button" id="contactButton">Contato</div>
+        <div class="contact-info" id="contactInfo">
+            <p>Email: <a href="mailto:adrianojunior@ads.fiponline.edu.br">adrianojunior@ads.fiponline.edu.br</a></p>
+        </div>
+    </footer>
+
+    <script>
+        const contactButton = document.getElementById('contactButton');
+        const contactInfo = document.getElementById('contactInfo');
+
+        contactButton.addEventListener('click', () => {
+            contactInfo.classList.toggle('show');
+        });
+    </script>
+
+</body>
+</html>
