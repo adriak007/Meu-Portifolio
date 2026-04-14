@@ -38,9 +38,10 @@ body {
     font-family: "Manrope", sans-serif;
     color: var(--text);
     background:
-        radial-gradient(circle at top left, rgba(176, 124, 255, 0.30), transparent 28%),
-        radial-gradient(circle at 85% 15%, rgba(111, 60, 195, 0.18), transparent 24%),
-        linear-gradient(180deg, #fcfaff 0%, #f6f2ff 45%, #efe8ff 100%);
+        radial-gradient(circle at 12% 8%, rgba(176, 124, 255, 0.28), transparent 0 34%),
+        radial-gradient(circle at 88% 14%, rgba(111, 60, 195, 0.16), transparent 0 30%),
+        radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.52), transparent 0 42%),
+        linear-gradient(180deg, #fdfbff 0%, #f7f2ff 30%, #f3ecff 62%, #efe7ff 82%, #ece3ff 100%);
 }
 
 img {
@@ -63,6 +64,41 @@ a {
     overflow: clip;
 }
 
+.back-to-top {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid rgba(111, 60, 195, 0.18);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--primary-dark);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-sm);
+    font-size: 1.1rem;
+    font-weight: 800;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.92);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.25s ease;
+}
+
+.back-to-top:hover,
+.back-to-top:focus-visible {
+    background: rgba(255, 255, 255, 0.96);
+    transform: translateY(0) scale(1);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
 .page-shell::before,
 .page-shell::after {
     content: "";
@@ -76,15 +112,15 @@ a {
 }
 
 .page-shell::before {
-    top: -8rem;
-    right: -8rem;
-    background: rgba(176, 124, 255, 0.26);
+    top: -10rem;
+    right: -6rem;
+    background: radial-gradient(circle, rgba(176, 124, 255, 0.22) 0%, rgba(176, 124, 255, 0.08) 45%, transparent 72%);
 }
 
 .page-shell::after {
-    bottom: 6rem;
-    left: -10rem;
-    background: rgba(111, 60, 195, 0.18);
+    bottom: 2rem;
+    left: -8rem;
+    background: radial-gradient(circle, rgba(111, 60, 195, 0.16) 0%, rgba(111, 60, 195, 0.06) 44%, transparent 72%);
 }
 
 .container {
@@ -358,7 +394,7 @@ a {
 }
 
 .section-soft {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.5));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.34) 48%, rgba(255, 255, 255, 0.22) 100%);
 }
 
 .section-heading {
@@ -675,6 +711,13 @@ a {
 
     .footer-bottom {
         text-align: center;
+    }
+
+    .back-to-top {
+        top: 0.75rem;
+        left: 0.75rem;
+        width: 2.75rem;
+        height: 2.75rem;
     }
 }
 

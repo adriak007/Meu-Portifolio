@@ -1,6 +1,8 @@
 const contactToggle = document.getElementById("contactToggle");
 const contactCard = document.getElementById("contactCard");
 const revealItems = document.querySelectorAll(".reveal");
+const topbar = document.querySelector(".topbar");
+const backToTop = document.getElementById("backToTop");
 
 if (contactToggle && contactCard) {
     contactToggle.addEventListener("click", () => {
@@ -32,4 +34,15 @@ if ("IntersectionObserver" in window && revealItems.length > 0) {
     revealItems.forEach((item) => revealObserver.observe(item));
 } else {
     revealItems.forEach((item) => item.classList.add("visible"));
+}
+
+if (topbar && backToTop) {
+    const toggleBackToTop = () => {
+        const topbarBottom = topbar.getBoundingClientRect().bottom;
+        backToTop.classList.toggle("visible", topbarBottom < 0);
+    };
+
+    toggleBackToTop();
+    window.addEventListener("scroll", toggleBackToTop, { passive: true });
+    window.addEventListener("resize", toggleBackToTop);
 }
