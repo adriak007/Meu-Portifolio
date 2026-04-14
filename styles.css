@@ -66,37 +66,49 @@ a {
 
 .back-to-top {
     position: fixed;
-    top: 1rem;
-    left: 1rem;
+    top: 50%;
+    right: 1rem;
     z-index: 30;
-    display: grid;
-    place-items: center;
-    width: 3rem;
-    height: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-width: 3.25rem;
+    height: 3.25rem;
+    padding: 0 1rem;
     border: 1px solid rgba(111, 60, 195, 0.18);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.82);
     color: var(--primary-dark);
     backdrop-filter: blur(18px);
     box-shadow: var(--shadow-sm);
-    font-size: 1.1rem;
+    font-size: 0.96rem;
     font-weight: 800;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px) scale(0.92);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.25s ease;
+    transform: translate(12px, -50%) scale(0.92);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.back-to-top span {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.back-to-top::after {
+    content: "Topo";
 }
 
 .back-to-top:hover,
 .back-to-top:focus-visible {
     background: rgba(255, 255, 255, 0.96);
-    transform: translateY(0) scale(1);
+    box-shadow: var(--shadow-md);
 }
 
 .back-to-top.visible {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0) scale(1);
+    transform: translate(0, -50%) scale(1);
 }
 
 .page-shell::before,
@@ -714,10 +726,21 @@ a {
     }
 
     .back-to-top {
-        top: 0.75rem;
-        left: 0.75rem;
-        width: 2.75rem;
-        height: 2.75rem;
+        top: auto;
+        bottom: 1rem;
+        right: 1rem;
+        min-width: 0;
+        height: 3rem;
+        padding: 0 1.1rem;
+        transform: translateY(12px) scale(0.92);
+    }
+
+    .back-to-top::after {
+        content: "Voltar ao topo";
+    }
+
+    .back-to-top.visible {
+        transform: translateY(0) scale(1);
     }
 }
 
