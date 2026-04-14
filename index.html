@@ -1,68 +1,217 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Adriano JR</title>
+    <meta name="description" content="Portfólio pessoal de Adriano Da Silva Dantas Júnior, desenvolvedor web, estudante de ADS na FIP e empresário.">
+    <title>Adriano JR | Desenvolvedor Web e Empresário</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="page-shell">
+        <header class="site-header" id="topo">
+            <div class="container">
+                <div class="topbar">
+                    <a class="brand" href="#topo" aria-label="Voltar ao topo">
+                        <span class="brand-mark">AJ</span>
+                        <span class="brand-text">
+                            <strong>Adriano JR</strong>
+                            <small>Portfólio Pessoal</small>
+                        </span>
+                    </a>
 
-    <header>
-        <h1>Adriano Da Silva Dantas Júnior</h1>
-        <h2>Desenvolvedor Web | Empresario</h2>
-    </header>
+                    <nav class="site-nav" aria-label="Navegação principal">
+                        <a href="#sobre">Sobre</a>
+                        <a href="#projetos">Projetos</a>
+                        <a href="#contato">Contato</a>
+                    </nav>
+                </div>
 
-    <nav>
-        <a href="#about">Sobre Mim</a>
-        <a href="#projects">Projetos</a>
-        <a href="#contact">Contato</a>
-    </nav>
+                <section class="hero">
+                    <div class="hero-copy">
+                        <p class="eyebrow">Desenvolvedor Web • Empresário • ADS na FIP</p>
+                        <h1>Adriano Da Silva Dantas Júnior</h1>
+                        <p class="hero-text">
+                            Desenvolvo experiências web com foco em clareza, presença visual e funcionalidade.
+                            Uno visão empreendedora e formação em Análise e Desenvolvimento de Sistemas para criar
+                            projetos digitais com identidade, organização e propósito.
+                        </p>
 
-    <section id="about" class="about">
-        <h2>Sobre Mim</h2>
-        <div class="about-images">
-            <img src="images/foto.jpg" alt="Adriano JR">
-        </div>
-        <p>Olá! Sou Adriano JR, desenvolvedor web e Empresario, aluno do curso de ADS na Faculdades Integradas de Patos FIP.</p>
-    </section>
+                        <div class="hero-actions">
+                            <a class="button button-primary" href="#projetos">Ver projetos</a>
+                            <a class="button button-secondary" href="#contato">Entrar em contato</a>
+                        </div>
 
-    <section id="projects" class="projects">
-        <h2>Meus Projetos</h2>
-        <div class="project">
-            <img src="images/five.png" alt="Projeto 1">
-            <h3>The FIVE</h3>
-            <p>Este é o projeto voltado á o mundo do e-commerce que temos como base o FIVE, remetendo aos 5 participantes do grupo que cada um tem sua parte no projeto.</p>
-        </div>
-        <div class="project">
-            <img src="images/notas.png" alt="Projeto 2">
-            <h3>Notas</h3>
-            <p>Projeto realizado dentro da própria matéria de Autoria Web proposto pela professora Keila.</p>
-        </div>
-        <div class="project">
-            <img src="images/login.png" alt="Projeto 3">
-            <h3>Login</h3>
-            <p>Como um desafio para a turma foi proposto uma tela de login em HTML e CSS.</p>
-        </div>
-    </section>
+                        <ul class="hero-highlights" aria-label="Destaques profissionais">
+                            <li>Interfaces responsivas</li>
+                            <li>Projetos com identidade visual</li>
+                            <li>Visão técnica e de negócio</li>
+                        </ul>
+                    </div>
 
-    <footer id="contact">
-        <p>Entre em contato comigo:</p>
-        <div class="floating-button" id="contactButton">Contato</div>
-        <div class="contact-info" id="contactInfo">
-            <p>Email: <a href="mailto:adrianojunior@ads.fiponline.edu.br">adrianojunior@ads.fiponline.edu.br</a></p>
-        </div>
-    </footer>
+                    <div class="hero-visual">
+                        <div class="photo-card">
+                            <span class="photo-badge">Disponível para novos projetos</span>
+                            <img src="images/foto.jpg" alt="Foto de Adriano Da Silva Dantas Júnior">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </header>
 
-    <script>
-        const contactButton = document.getElementById('contactButton');
-        const contactInfo = document.getElementById('contactInfo');
+        <main>
+            <section class="section" id="sobre">
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <p class="section-kicker">Sobre mim</p>
+                        <h2>Perfil profissional com base técnica e mentalidade empreendedora</h2>
+                    </div>
 
-        contactButton.addEventListener('click', () => {
-            contactInfo.classList.toggle('show');
-        });
-    </script>
+                    <div class="about-grid reveal">
+                        <article class="about-card">
+                            <p>
+                                Sou Adriano Da Silva Dantas Júnior, desenvolvedor web e empresário, com atuação voltada
+                                à construção de soluções digitais mais organizadas, funcionais e visualmente consistentes.
+                                Gosto de transformar ideias em páginas bem estruturadas, com atenção aos detalhes e foco
+                                na experiência de quem navega.
+                            </p>
+                            <p>
+                                Atualmente curso Análise e Desenvolvimento de Sistemas na FIP, ampliando minha base em
+                                lógica, desenvolvimento e boas práticas. Essa formação, somada à vivência empreendedora,
+                                fortalece minha capacidade de enxergar cada projeto tanto pelo lado técnico quanto pelo
+                                impacto real que ele precisa gerar.
+                            </p>
+                        </article>
 
+                        <aside class="about-panel">
+                            <div class="info-chip">Foco atual</div>
+                            <h3>Desenvolvimento web com identidade, organização e evolução constante.</h3>
+                            <ul class="about-list">
+                                <li>Criação de interfaces em HTML, CSS e JavaScript puro</li>
+                                <li>Busca por layouts modernos, limpos e responsivos</li>
+                                <li>Interesse em unir design, código e estratégia de negócio</li>
+                            </ul>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section section-soft" id="projetos">
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <p class="section-kicker">Projetos</p>
+                        <h2>Trabalhos que mostram evolução visual, prática técnica e atenção aos detalhes</h2>
+                    </div>
+
+                    <div class="projects-grid">
+                        <article class="project-card reveal">
+                            <div class="project-image">
+                                <img src="images/five.png" alt="Projeto The FIVE">
+                            </div>
+                            <div class="project-content">
+                                <div class="project-top">
+                                    <p class="project-tag">E-commerce conceitual</p>
+                                    <h3>The FIVE</h3>
+                                </div>
+                                <p>
+                                    Projeto com proposta voltada ao universo do e-commerce, desenvolvido em equipe e
+                                    pensado para representar a participação estratégica de cada integrante. A proposta
+                                    combina organização visual, navegação objetiva e uma apresentação mais comercial.
+                                </p>
+                                <ul class="tech-list" aria-label="Tecnologias do projeto The FIVE">
+                                    <li>HTML</li>
+                                    <li>CSS</li>
+                                    <li>JavaScript</li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="project-card reveal">
+                            <div class="project-image">
+                                <img src="images/notas.png" alt="Projeto Notas">
+                            </div>
+                            <div class="project-content">
+                                <div class="project-top">
+                                    <p class="project-tag">Projeto acadêmico</p>
+                                    <h3>Notas</h3>
+                                </div>
+                                <p>
+                                    Aplicação desenvolvida na disciplina de Autoria Web com foco em estruturação de
+                                    interface, clareza no fluxo de uso e aplicação prática dos fundamentos vistos em sala.
+                                    O resultado reforça consistência visual e organização do conteúdo.
+                                </p>
+                                <ul class="tech-list" aria-label="Tecnologias do projeto Notas">
+                                    <li>HTML</li>
+                                    <li>CSS</li>
+                                    <li>UX básico</li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="project-card reveal">
+                            <div class="project-image">
+                                <img src="images/login.png" alt="Projeto Tela de Login">
+                            </div>
+                            <div class="project-content">
+                                <div class="project-top">
+                                    <p class="project-tag">Desafio de interface</p>
+                                    <h3>Login</h3>
+                                </div>
+                                <p>
+                                    Tela de login criada como exercício prático de front-end, com atenção à hierarquia
+                                    visual, equilíbrio de espaçamentos e construção de uma interface objetiva. Um estudo
+                                    importante para consolidar fundamentos de layout e apresentação.
+                                </p>
+                                <ul class="tech-list" aria-label="Tecnologias do projeto Login">
+                                    <li>HTML</li>
+                                    <li>CSS</li>
+                                    <li>Layout responsivo</li>
+                                </ul>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer" id="contato">
+            <div class="container">
+                <div class="contact-panel reveal">
+                    <div class="contact-copy">
+                        <p class="section-kicker">Contato</p>
+                        <h2>Vamos conversar sobre ideias, projetos e oportunidades.</h2>
+                        <p>
+                            Estou aberto a conexões profissionais, novos desafios e projetos que valorizem um trabalho
+                            bem apresentado, funcional e com visão de crescimento.
+                        </p>
+                    </div>
+
+                    <div class="contact-actions">
+                        <button class="button button-primary contact-toggle" id="contactToggle" type="button" aria-expanded="false" aria-controls="contactCard">
+                            Mostrar contatos
+                        </button>
+
+                        <div class="contact-card" id="contactCard" hidden>
+                            <a href="mailto:adrianojunior@ads.fiponline.edu.br">adrianojunior@ads.fiponline.edu.br</a>
+                            <a href="#" aria-label="LinkedIn de Adriano JR">LinkedIn</a>
+                            <a href="#" aria-label="GitHub de Adriano JR">GitHub</a>
+                            <a href="#" aria-label="WhatsApp de Adriano JR">WhatsApp</a>
+                            <p class="contact-note">Atualize os links de redes sociais com seus perfis reais.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <p>© 2026 Adriano Da Silva Dantas Júnior. Portfólio pessoal em HTML, CSS e JavaScript puro.</p>
+                    <a href="#topo">Voltar ao topo</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
