@@ -38,5 +38,15 @@ export const projects: Project[] = [
     image: "/images/login.png",
     technologies: ["HTML", "CSS", "Layout Responsivo"],
     accent: "from-purple-500/25 via-sky-400/10 to-transparent"
+  },
+  {
+    id: 4,
+    title: "Cook It",
+    category: "Receitas com IA",
+    description:
+      "Aplicativo inteligente que sugere receitas personalizadas com base nos ingredientes disponíveis em casa. Com inteligência artificial generativa, transforma qualquer geladeira em uma cozinha criativa, reduzindo o desperdício e tornando o dia a dia mais saboroso.",
+    image: "/images/cook-it.png",
+    technologies: ["React Native", "Gemini API", "TypeScript"],
+    accent: "from-orange-400/30 via-amber-300/10 to-transparent"
   }
 ];
