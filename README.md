@@ -51,5 +51,5 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
 ## Contato
 
-- **Email:** adrianojunior@ads.fiponline.edu.br
+- **Email:** adriak007@gmail.com
 - **GitHub:** [adriak007](https://github.com/adriak007)
