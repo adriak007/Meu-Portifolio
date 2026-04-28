@@ -1,18 +1,30 @@
 import { Container } from "@/components/container";
 import { SectionHeading } from "@/components/section-heading";
 
+const highlights = [
+  "Estudante de ADS na FIP",
+  "Atuacao como empresario",
+  "Interesse constante em desenvolvimento web",
+  "Busca por interfaces mais elegantes e profissionais",
+];
+
 export function AboutSection() {
   return (
     <section id="sobre" className="py-24">
       <Container>
-        <SectionHeading
-          eyebrow="Sobre mim"
-          title="Formacao em tecnologia com mentalidade de negocio e atencao real a apresentacao."
-          description="Minha evolucao em desenvolvimento web passa tanto por estudo tecnico quanto por um olhar pratico para construir experiencias claras, bem organizadas e com identidade."
-        />
+        <div className="reveal">
+          <SectionHeading
+            eyebrow="Sobre mim"
+            title="Formacao em tecnologia com mentalidade de negocio e atencao real a apresentacao."
+            description="Minha evolucao em desenvolvimento web passa tanto por estudo tecnico quanto por um olhar pratico para construir experiencias claras, bem organizadas e com identidade."
+          />
+        </div>
 
         <div className="mt-14 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <article className="surface-panel gradient-stroke rounded-[2rem] p-8 sm:p-10">
+          <article
+            className="reveal from-left surface-panel gradient-stroke shine rounded-[2rem] p-8 sm:p-10"
+            style={{ "--rd": "0.1s" } as React.CSSProperties}
+          >
             <div className="space-y-6 text-base leading-8 text-[color:var(--muted)] sm:text-lg">
               <p>
                 Sou Adriano Da Silva Dantas Junior, desenvolvedor web e
@@ -35,7 +47,10 @@ export function AboutSection() {
             </div>
           </article>
 
-          <aside className="surface-panel-strong gradient-stroke flex flex-col justify-between rounded-[2rem] p-8 sm:p-10">
+          <aside
+            className="reveal from-right surface-panel-strong gradient-stroke flex flex-col justify-between rounded-[2rem] p-8 sm:p-10"
+            style={{ "--rd": "0.15s" } as React.CSSProperties}
+          >
             <div>
               <span className="inline-flex rounded-full bg-violet-500/10 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.22em] text-violet-950">
                 Destaques
@@ -46,15 +61,11 @@ export function AboutSection() {
             </div>
 
             <div className="mt-8 space-y-3">
-              {[
-                "Estudante de ADS na FIP",
-                "Atuacao como empresario",
-                "Interesse constante em desenvolvimento web",
-                "Busca por interfaces mais elegantes e profissionais"
-              ].map((item) => (
+              {highlights.map((item, i) => (
                 <div
                   key={item}
-                  className="rounded-2xl border border-violet-200/80 bg-white/70 px-4 py-4 text-sm font-semibold text-slate-700 sm:text-base"
+                  className="reveal rounded-2xl border border-violet-200/80 bg-white/70 px-4 py-4 text-sm font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-white sm:text-base"
+                  style={{ "--rd": `${0.22 + i * 0.08}s` } as React.CSSProperties}
                 >
                   {item}
                 </div>

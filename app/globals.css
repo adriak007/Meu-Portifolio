@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+::selection {
+  background: rgba(109, 63, 210, 0.18);
+  color: #241533;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(109, 63, 210, 0.65);
+  outline-offset: 3px;
+  border-radius: 0.4rem;
+}
+
 :root {
   --background: #fcf9ff;
   --surface: rgba(255, 255, 255, 0.74);
@@ -169,6 +180,120 @@ section[id] {
   }
 }
 
+/* ===== HERO ENTRANCE ===== */
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-enter {
+  animation: hero-enter 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--anim-delay, 0s) both;
+}
+
+/* ===== FLOATING ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+/* ===== BOUNCE SLOW ===== */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(7px); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* ===== STATUS DOT ===== */
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+.status-dot {
+  position: relative;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+/* ===== SCROLL REVEAL ===== */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-left {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes reveal-right {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.js .reveal {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  animation: reveal-up 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s) both;
+}
+
+.reveal.from-left.is-visible {
+  animation: reveal-left 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s) both;
+}
+
+.reveal.from-right.is-visible {
+  animation: reveal-right 0.75s cubic-bezier(0.16, 1, 0.3, 1) var(--rd, 0s) both;
+}
+
+/* ===== SHINE HOVER ===== */
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 60%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.55s ease;
+  pointer-events: none;
+}
+
+.shine:hover::after {
+  transform: translateX(130%);
+}
+
+/* ===== REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -181,5 +306,24 @@ section[id] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero-enter {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .animate-float,
+  .animate-bounce-slow {
+    animation: none !important;
+  }
+
+  .status-dot::before {
+    animation: none !important;
   }
 }

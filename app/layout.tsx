@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Manrope, Space_Grotesk } from "next/font/google";
+import { BackToTop } from "@/components/back-to-top";
+import { ScrollObserver } from "@/components/scroll-observer";
+import { ScrollProgress } from "@/components/scroll-progress";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -26,7 +29,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${manrope.variable} ${spaceGrotesk.variable}`}>
+        <ScrollProgress />
+        <ScrollObserver />
         {children}
+        <BackToTop />
       </body>
     </html>
   );

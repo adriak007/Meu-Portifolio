@@ -5,23 +5,23 @@ const links = [
   {
     label: "Email",
     value: "adrianojunior@ads.fiponline.edu.br",
-    href: "mailto:adrianojunior@ads.fiponline.edu.br"
+    href: "mailto:adrianojunior@ads.fiponline.edu.br",
   },
   {
     label: "GitHub",
     value: "github.com/seu-usuario",
-    href: "https://github.com/"
+    href: "https://github.com/",
   },
   {
     label: "LinkedIn",
     value: "linkedin.com/in/seu-perfil",
-    href: "https://www.linkedin.com/"
+    href: "https://www.linkedin.com/",
   },
   {
     label: "WhatsApp",
     value: "(00) 00000-0000",
-    href: "https://wa.me/"
-  }
+    href: "https://wa.me/",
+  },
 ];
 
 export function ContactSection() {
@@ -29,7 +29,10 @@ export function ContactSection() {
     <section id="contato" className="py-24">
       <Container>
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="surface-panel gradient-stroke rounded-[2rem] p-8 sm:p-10">
+          <div
+            className="reveal from-left surface-panel gradient-stroke rounded-[2rem] p-8 sm:p-10"
+            style={{ "--rd": "0.05s" } as React.CSSProperties}
+          >
             <SectionHeading
               eyebrow="Contato"
               title="Aberto a novas conexoes, ideias e oportunidades."
@@ -37,15 +40,19 @@ export function ContactSection() {
             />
           </div>
 
-          <div className="surface-panel-strong gradient-stroke rounded-[2rem] p-5 sm:p-6">
+          <div
+            className="reveal from-right surface-panel-strong gradient-stroke rounded-[2rem] p-5 sm:p-6"
+            style={{ "--rd": "0.1s" } as React.CSSProperties}
+          >
             <div className="grid gap-4">
-              {links.map((link) => (
+              {links.map((link, i) => (
                 <a
                   key={link.label}
                   href={link.href}
                   target={link.label === "Email" ? undefined : "_blank"}
                   rel={link.label === "Email" ? undefined : "noreferrer"}
-                  className="group rounded-[1.5rem] border border-violet-200/80 bg-white/75 px-5 py-5 transition hover:-translate-y-1 hover:border-violet-300 hover:bg-white"
+                  className="reveal shine group rounded-[1.5rem] border border-violet-200/80 bg-white/75 px-5 py-5 transition hover:-translate-y-1 hover:border-violet-300 hover:bg-white hover:shadow-[0_12px_32px_rgba(109,63,210,0.12)]"
+                  style={{ "--rd": `${0.15 + i * 0.07}s` } as React.CSSProperties}
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div>
@@ -56,8 +63,10 @@ export function ContactSection() {
                         {link.value}
                       </p>
                     </div>
-                    <span className="text-lg text-violet-700 transition group-hover:translate-x-1">
-                      →
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100/80 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white group-hover:translate-x-0.5">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </span>
                   </div>
                 </a>
