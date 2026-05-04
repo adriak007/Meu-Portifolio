@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { smoothScrollTo } from "@/lib/scroll";
 
 export function BackToTop() {
   const [visible, setVisible] = useState(false);
@@ -16,7 +17,7 @@ export function BackToTop() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const scrollToTop = () => smoothScrollTo(0);
 
   const r = 26;
   const circ = 2 * Math.PI * r;
