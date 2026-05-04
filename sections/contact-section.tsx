@@ -4,12 +4,12 @@ import { SectionHeading } from "@/components/section-heading";
 const links = [
   {
     label: "Email",
-    value: "adrianojunior@ads.fiponline.edu.br",
-    href: "mailto:adrianojunior@ads.fiponline.edu.br",
+    value: "adriak007@gmail.com",
+    href: "mailto:adriak007@gmail.com",
   },
   {
     label: "GitHub",
-    value: "github.com/seu-usuario",
+    value: "github.com/adriak007",
     href: "https://github.com/",
   },
   {
@@ -19,7 +19,7 @@ const links = [
   },
   {
     label: "WhatsApp",
-    value: "(00) 00000-0000",
+    value: "(84) 99685-0600",
     href: "https://wa.me/",
   },
 ];

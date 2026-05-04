@@ -19,7 +19,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Adriano JR | Desenvolvedor Web e Empresario",
   description:
-    "Portfolio de Adriano Da Silva Dantas Junior, desenvolvedor web, empresario e estudante de ADS na FIP."
+    "Adriano Da Silva Dantas Junior, desenvolvedor web e estudante de ADS na FIP."
 };
 
 export default function RootLayout({
