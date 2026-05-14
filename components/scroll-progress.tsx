@@ -16,11 +16,11 @@ export function ScrollProgress() {
   return (
     <div
       aria-hidden="true"
-      className="fixed left-0 top-0 z-[999] h-[3px] bg-gradient-to-r from-violet-600 via-fuchsia-500 to-violet-400"
+      className="fixed left-0 top-0 z-[999] h-[2px] bg-gradient-to-r from-violet-500 via-purple-400 to-violet-300"
       style={{
         width: `${width}%`,
         transition: "width 80ms linear",
-        boxShadow: width > 0 ? "0 0 10px rgba(109,63,210,0.5), 0 0 4px rgba(217,70,239,0.4)" : "none",
+        boxShadow: width > 0 ? "0 0 12px rgba(167,139,250,0.6), 0 0 6px rgba(124,58,237,0.4)" : "none",
       }}
     />
   );

@@ -1,72 +1,106 @@
 import { Container } from "@/components/container";
-import { SectionHeading } from "@/components/section-heading";
 
-const highlights = [
+const STATS = [
+  { value: "4", label: "Projetos concluídos" },
+  { value: "ADS", label: "Formação na FIP" },
+  { value: "2+", label: "Anos estudando" },
+  { value: "1×", label: "Empreendedor" },
+];
+
+const HIGHLIGHTS = [
   "Estudante de ADS na FIP",
-  "Atuacao como empresario",
+  "Atuação como empresário",
   "Interesse constante em desenvolvimento web",
   "Busca por interfaces mais elegantes e profissionais",
 ];
 
 export function AboutSection() {
   return (
-    <section id="sobre" className="py-24">
+    <section id="sobre" className="py-28">
       <Container>
-        <div className="reveal">
-          <SectionHeading
-            eyebrow="Sobre mim"
-            title="Formacao em tecnologia com mentalidade de negocio e atencao real a apresentacao."
-            description="Minha evolucao em desenvolvimento web passa tanto por estudo tecnico quanto por um olhar pratico para construir experiencias claras, bem organizadas e com identidade."
-          />
+
+        {/* ── Label ── */}
+        <div className="reveal mb-14">
+          <span className="font-mono text-xs tracking-widest text-violet-400/55">
+            01 — Sobre
+          </span>
         </div>
 
-        <div className="mt-14 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        {/* ── Stats ── */}
+        <div className="mb-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {STATS.map((stat, i) => (
+            <div
+              key={stat.label}
+              className="reveal glass rounded-2xl p-5"
+              style={{ "--rd": `${0.07 + i * 0.07}s` } as React.CSSProperties}
+            >
+              <p className="font-display text-3xl font-bold text-white/90 sm:text-4xl">
+                {stat.value}
+              </p>
+              <p className="mt-1.5 text-sm leading-snug text-white/40">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Main ── */}
+        <div className="grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
+
+          {/* Bio */}
           <article
-            className="reveal from-left surface-panel gradient-stroke shine rounded-[2rem] p-8 sm:p-10"
-            style={{ "--rd": "0.1s" } as React.CSSProperties}
+            className="reveal from-left glass gradient-stroke shine rounded-[1.25rem] p-8 sm:p-10"
+            style={{ "--rd": "0.12s" } as React.CSSProperties}
           >
-            <div className="space-y-6 text-base leading-8 text-[color:var(--muted)] sm:text-lg">
+            <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.04em] text-white/90 sm:text-4xl">
+              Formação em tecnologia com mentalidade de negócio.
+            </h2>
+            <div className="mt-8 space-y-5 text-base leading-8 text-white/42 sm:text-lg">
               <p>
                 Sou Adriano Da Silva Dantas Junior, desenvolvedor web e
-                empresario. Gosto de transformar ideias em interfaces com boa
-                estrutura, visual refinado e navegacao objetiva, sempre buscando
-                uma entrega mais madura do que o basico.
+                empresário. Gosto de transformar ideias em interfaces com boa
+                estrutura, visual refinado e navegação objetiva — sempre
+                buscando uma entrega mais madura do que o básico.
               </p>
               <p>
-                Atualmente curso Analise e Desenvolvimento de Sistemas na FIP,
-                o que fortalece minha base em logica, desenvolvimento e boas
-                praticas de software. Ao mesmo tempo, minha atuacao como
-                empresario amplia a forma como penso produto, posicionamento e
-                valor real para quem vai usar cada projeto.
+                Atualmente curso Análise e Desenvolvimento de Sistemas na FIP,
+                o que fortalece minha base em lógica, desenvolvimento e boas
+                práticas de software. Minha atuação como empresário amplia a
+                forma como penso produto, posicionamento e valor real para quem
+                vai usar cada projeto.
               </p>
               <p>
-                Meu foco esta em evoluir continuamente na criacao de interfaces
-                modernas, responsivas e bem polidas, unindo tecnica,
-                organizacao visual e uma presenca digital mais profissional.
+                Meu foco está em evoluir continuamente na criação de interfaces
+                modernas, responsivas e bem polidas — unindo técnica,
+                organização visual e uma presença digital mais profissional.
               </p>
             </div>
           </article>
 
+          {/* Highlights */}
           <aside
-            className="reveal from-right surface-panel-strong gradient-stroke flex flex-col justify-between rounded-[2rem] p-8 sm:p-10"
-            style={{ "--rd": "0.15s" } as React.CSSProperties}
+            className="reveal from-right glass-strong gradient-stroke flex flex-col rounded-[1.25rem] p-8 sm:p-10"
+            style={{ "--rd": "0.18s" } as React.CSSProperties}
           >
-            <div>
-              <span className="inline-flex rounded-full bg-violet-500/10 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.22em] text-violet-950">
-                Destaques
-              </span>
-              <h3 className="font-display mt-5 text-3xl font-bold tracking-[-0.05em] text-slate-950">
-                Tecnologia, estetica e intencao no mesmo projeto.
-              </h3>
-            </div>
+            <span className="font-mono text-xs tracking-widest text-violet-400/55">
+              Destaques
+            </span>
+            <h3 className="font-display mt-4 text-2xl font-bold tracking-[-0.04em] text-white/85">
+              Tecnologia, estética e intenção no mesmo projeto.
+            </h3>
 
-            <div className="mt-8 space-y-3">
-              {highlights.map((item, i) => (
+            <div className="mt-8 flex flex-col gap-2.5">
+              {HIGHLIGHTS.map((item, i) => (
                 <div
                   key={item}
-                  className="reveal rounded-2xl border border-violet-200/80 bg-white/70 px-4 py-4 text-sm font-semibold text-slate-700 transition hover:border-violet-300 hover:bg-white sm:text-base"
-                  style={{ "--rd": `${0.22 + i * 0.08}s` } as React.CSSProperties}
+                  className="reveal flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.025] px-4 py-4 text-sm font-medium text-white/50 transition hover:border-violet-500/20 hover:bg-violet-500/[0.04] hover:text-white/70"
+                  style={
+                    { "--rd": `${0.26 + i * 0.07}s` } as React.CSSProperties
+                  }
                 >
+                  <span className="mt-0.5 shrink-0 font-mono text-xs text-violet-400/50">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   {item}
                 </div>
               ))}
