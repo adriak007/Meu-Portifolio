@@ -3,7 +3,8 @@
     "allow": [
       "Skill(update-config)",
       "Skill(update-config:*)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(git pull *)"
     ]
   }
 }
