@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/container";
+import { PhysicsBadge } from "@/components/physics-badge";
 
 const NAV_LINKS = [
   { label: "Sobre", href: "#sobre" },
@@ -9,14 +9,28 @@ const NAV_LINKS = [
 ];
 
 const HEADING_LINES = [
-  { text: "Adriano", className: "text-white/90" },
-  { text: "Da Silva Dantas", className: "gradient-text" },
-  { text: "Junior.", className: "text-white/40" },
+  { text: "Frontend", className: "text-white/90" },
+  { text: "Developer", className: "gradient-text" },
+  { text: "Junior.", className: "text-white/35" },
 ];
 
 export function HeroSection() {
   return (
-    <header id="topo" className="relative min-h-screen">
+    <header id="topo" className="relative min-h-screen overflow-hidden">
+
+      {/* Grade sutil sobre o background */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        aria-hidden="true"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.032) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.032) 1px, transparent 1px)
+          `,
+          backgroundSize: "52px 52px",
+        }}
+      />
+
       <Container className="relative z-10">
 
         {/* ── Navigation ── */}
@@ -131,41 +145,12 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right – Photo */}
+          {/* Right – Crachá com física */}
           <div
             className="hero-enter relative mx-auto w-full max-w-sm lg:max-w-none"
             style={{ "--anim-delay": "0.22s" } as React.CSSProperties}
           >
-            <div className="gradient-stroke relative rounded-[2rem] border border-white/[0.07] bg-white/[0.02] p-3">
-              <div
-                className="absolute inset-x-8 top-4 h-28 rounded-full bg-violet-600/[0.12] blur-2xl"
-                aria-hidden="true"
-              />
-
-              <div className="relative overflow-hidden rounded-[1.6rem]">
-                <Image
-                  src="/images/foto.jpg"
-                  alt="Adriano Da Silva Dantas Junior"
-                  width={900}
-                  height={1100}
-                  className="aspect-[4/5] w-full object-cover brightness-[0.88]"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c14]/70 via-transparent to-transparent" />
-              </div>
-
-              <div className="animate-float absolute -bottom-4 left-4 right-4">
-                <div className="glass rounded-2xl px-4 py-3">
-                  <p className="flex items-center gap-2 font-mono text-xs tracking-wider text-violet-300">
-                    <span className="status-dot" aria-hidden="true" />
-                    Disponível para novos projetos
-                  </p>
-                  <p className="mt-1 text-sm text-white/40">
-                    Front-end moderno com foco em presença digital.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <PhysicsBadge />
           </div>
         </div>
 
