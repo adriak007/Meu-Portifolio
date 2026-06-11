@@ -3,235 +3,249 @@
 import Image from "next/image";
 import { useRef, useEffect } from "react";
 
-// ── Constantes de física ───────────────────────────────────────────────────────
-const CORD_LENGTH  = 200;    // px — comprimento do cordão
-const GRAVITY      = 1100;   // px/s²
-const PEND_DAMP    = 0.9984; // amortecimento do pêndulo — balança ~10x antes de parar
-const BADGE_SPRING = 7;      // rigidez da mola do giro do crachá (baixo = mais solto)
-const BADGE_DAMP   = 3;      // amortecimento do giro do crachá
-const MAX_ANGLE    = Math.PI * 0.72;
-const MAX_OMEGA    = 12;     // rad/s — limite de velocidade
+// ── Constantes de física ──────────────────────────────────────────────────────
+const SEGMENTS = 12;       // quantos segmentos na corda
+const SEG_LEN  = 24;       // comprimento natural de cada segmento (px)
+const GRAVITY  = 1800;     // px/s²
+const DAMP     = 0.955;    // amortecimento de cada nó da corda
+const STIFF    = 0.28;     // rigidez da restrição (< 0.5 = elástica, > 0.7 = dura)
+const ITERS    = 10;       // iterações de restrição por frame (mais = mais rígida)
+const PAD      = 320;      // espaço extra do canvas além do container
+
+interface Pt { x: number; y: number; ox: number; oy: number }
 
 export function PhysicsBadge() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef    = useRef<HTMLCanvasElement>(null);
-  const badgeRef     = useRef<HTMLDivElement>(null);
-  const rafRef       = useRef<number>(0);
-
-  const state = useRef({
-    // ── Pêndulo (corda) ──────────────────────────────────────
-    angle: 0.54,    // ângulo inicial: ~31 graus — visível e dramático
-    omega: -0.25,   // pequeno impulso inicial
-
-    // ── Corpo do crachá (grau de liberdade independente) ─────
-    // O crachá é atraído para o ângulo da corda por uma mola
-    // mas tem inércia própria → wobble realista
-    badgeRot:   0.54,  // começa alinhado com a corda
-    badgeOmega: -1.4,  // giro inicial — efeito dramático ao carregar a página
-
-    // ── Drag ────────────────────────────────────────────────
-    isDragging:   false,
-    prevAngle:    0,
-    prevTime:     0,
-    pointerOmega: 0,
-  });
+  const wrapRef   = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const badgeRef  = useRef<HTMLDivElement>(null);
+  const rafRef    = useRef<number>(0);
+  const pts       = useRef<Pt[]>([]);
+  const drag      = useRef({ on: false, offX: 0, offY: 0 });
 
   useEffect(() => {
-    const container = containerRef.current;
-    const canvas    = canvasRef.current;
-    const badge     = badgeRef.current;
-    if (!container || !canvas || !badge) return;
+    const wrap   = wrapRef.current!;
+    const canvas = canvasRef.current!;
+    const badge  = badgeRef.current!;
+    const ctx    = canvas.getContext("2d")!;
 
-    const ctx = canvas.getContext("2d")!;
     let lastTime = performance.now();
 
-    const pivot = () => ({ x: container.offsetWidth / 2, y: 22 });
+    // Ponto de ancoragem (topo-centro do container)
+    const getPivot = () => ({
+      x: wrap.offsetWidth / 2,
+      y: 22,
+    });
 
+    // ── Redimensionar canvas com padding extra ───────────────────────────────
     const syncCanvas = () => {
-      canvas.width  = container.offsetWidth;
-      canvas.height = container.offsetHeight;
+      canvas.width  = wrap.offsetWidth  + PAD * 2;
+      canvas.height = wrap.offsetHeight + PAD * 2;
+      canvas.style.left   = `-${PAD}px`;
+      canvas.style.top    = `-${PAD}px`;
+      canvas.style.width  = `${wrap.offsetWidth  + PAD * 2}px`;
+      canvas.style.height = `${wrap.offsetHeight + PAD * 2}px`;
     };
     syncCanvas();
 
-    const ro = new ResizeObserver(syncCanvas);
-    ro.observe(container);
-
-    // Converte coordenada da tela em ângulo relativo ao pivô
-    const screenToAngle = (cx: number, cy: number) => {
-      const rect = container.getBoundingClientRect();
-      const p    = pivot();
-      return Math.atan2(cx - (rect.left + p.x), cy - (rect.top + p.y));
+    // ── Inicializar corda em linha reta para baixo ──────────────────────────
+    const initRope = () => {
+      const p = getPivot();
+      pts.current = Array.from({ length: SEGMENTS + 1 }, (_, i) => {
+        const y = p.y + i * SEG_LEN;
+        return { x: p.x, y, ox: p.x, oy: y };
+      });
+      // Impulso inicial — badge começa com velocidade lateral
+      const last = pts.current[SEGMENTS];
+      last.ox = last.x + 5; // move para a esquerda inicialmente
     };
+    initRope();
 
-    // ── Eventos de ponteiro ────────────────────────────────────────────────────
+    const ro = new ResizeObserver(() => {
+      syncCanvas();
+      // Reancora o pivot sem resetar o resto da corda
+      const p = getPivot();
+      pts.current[0].x  = p.x;
+      pts.current[0].y  = p.y;
+      pts.current[0].ox = p.x;
+      pts.current[0].oy = p.y;
+    });
+    ro.observe(wrap);
+
+    // ── Detecção do badge ────────────────────────────────────────────────────
     const onPointerDown = (e: PointerEvent) => {
-      const r   = badge.getBoundingClientRect();
-      const pad = 16;
+      const br   = badge.getBoundingClientRect();
+      const wr   = wrap.getBoundingClientRect();
+      const pad  = 18;
       if (
-        e.clientX < r.left  - pad || e.clientX > r.right  + pad ||
-        e.clientY < r.top   - pad || e.clientY > r.bottom + pad
+        e.clientX < br.left  - pad || e.clientX > br.right  + pad ||
+        e.clientY < br.top   - pad || e.clientY > br.bottom + pad
       ) return;
 
-      const s      = state.current;
-      s.isDragging   = true;
-      s.omega        = 0;
-      s.badgeOmega   = 0;
-      s.pointerOmega = 0;
-      s.prevAngle    = screenToAngle(e.clientX, e.clientY);
-      s.prevTime     = performance.now();
-      container.setPointerCapture(e.pointerId);
+      // Offset do cursor em relação ao ponto de ancoragem do badge (último nó)
+      const last = pts.current[SEGMENTS];
+      drag.current = {
+        on:   true,
+        offX: (e.clientX - wr.left) - last.x,
+        offY: (e.clientY - wr.top)  - last.y,
+      };
+      wrap.setPointerCapture(e.pointerId);
       document.body.style.cursor = "grabbing";
       e.preventDefault();
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      const s = state.current;
-      if (!s.isDragging) return;
-
-      const now      = performance.now();
-      const newAngle = screenToAngle(e.clientX, e.clientY);
-      const dt       = (now - s.prevTime) / 1000;
-
-      if (dt > 0.001) {
-        let da = newAngle - s.prevAngle;
-        if (da >  Math.PI) da -= 2 * Math.PI;
-        if (da < -Math.PI) da += 2 * Math.PI;
-        s.pointerOmega = da / dt;
-      }
-
-      s.angle    = Math.max(-MAX_ANGLE, Math.min(MAX_ANGLE, newAngle));
-      s.prevAngle = newAngle;
-      s.prevTime  = now;
+      if (!drag.current.on) return;
+      const wr   = wrap.getBoundingClientRect();
+      const last = pts.current[SEGMENTS];
+      // Mantém o histórico de posição para que o Verlet calcule a velocidade ao soltar
+      last.ox = last.x;
+      last.oy = last.y;
+      last.x  = (e.clientX - wr.left)  - drag.current.offX;
+      last.y  = (e.clientY - wr.top)   - drag.current.offY;
       e.preventDefault();
     };
 
     const onPointerUp = (e: PointerEvent) => {
-      const s = state.current;
-      if (!s.isDragging) return;
-      s.isDragging = false;
-
-      // Transfere velocidade do drag para o pêndulo e para o giro do crachá
-      const clampedOmega = Math.max(-MAX_OMEGA, Math.min(MAX_OMEGA, s.pointerOmega));
-      s.omega      = clampedOmega * 0.62;
-      s.badgeOmega = clampedOmega * 0.45; // crachá gira em resposta ao arremesso
-
+      drag.current.on = false;
       document.body.style.cursor = "";
       e.preventDefault();
     };
 
-    container.addEventListener("pointerdown",   onPointerDown);
-    container.addEventListener("pointermove",   onPointerMove);
-    container.addEventListener("pointerup",     onPointerUp);
-    container.addEventListener("pointercancel", onPointerUp);
+    wrap.addEventListener("pointerdown",   onPointerDown);
+    wrap.addEventListener("pointermove",   onPointerMove);
+    wrap.addEventListener("pointerup",     onPointerUp);
+    wrap.addEventListener("pointercancel", onPointerUp);
 
-    // ── Loop de animação ───────────────────────────────────────────────────────
-    const animate = (now: number) => {
-      const dt = Math.min((now - lastTime) / 1000, 0.05); // cap em 50ms
-      lastTime = now;
+    // ── Loop de física + desenho ─────────────────────────────────────────────
+    const tick = (now: number) => {
+      const dt  = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime  = now;
+      const p   = getPivot();
+      const ps  = pts.current;
+      const isDrag = drag.current.on;
 
-      const s = state.current;
-      const p = pivot();
-
-      // ── Física do pêndulo ────────────────────────────────────────────────
-      if (!s.isDragging) {
-        const alpha = -(GRAVITY / CORD_LENGTH) * Math.sin(s.angle);
-        s.omega = (s.omega + alpha * dt) * Math.pow(PEND_DAMP, dt * 60);
-        s.omega = Math.max(-MAX_OMEGA, Math.min(MAX_OMEGA, s.omega));
-        s.angle += s.omega * dt;
-        s.angle = Math.max(-MAX_ANGLE, Math.min(MAX_ANGLE, s.angle));
+      // ── Integração Verlet ──────────────────────────────────────────────
+      for (let i = 1; i <= SEGMENTS; i++) {
+        if (i === SEGMENTS && isDrag) continue; // badge controlado pelo mouse
+        const n  = ps[i];
+        const vx = (n.x - n.ox) * DAMP;
+        const vy = (n.y - n.oy) * DAMP;
+        n.ox = n.x;
+        n.oy = n.y;
+        n.x += vx;
+        n.y += vy + GRAVITY * dt * dt;
       }
 
-      // ── Física do giro do crachá (mola + amortecimento) ─────────────────
-      // O crachá é atraído para o ângulo da corda, mas com inércia própria
-      // Isso cria o "wobble" realista: o crachá oscila independente da corda
-      const springForce = -(s.badgeRot - s.angle) * BADGE_SPRING;
-      const dampForce   = -s.badgeOmega * BADGE_DAMP;
-      const badgeAlpha  = springForce + dampForce;
+      // ── Restrições de comprimento (relaxação iterativa) ────────────────
+      for (let iter = 0; iter < ITERS; iter++) {
+        // Ancorar o ponto de origem (parede/teto)
+        ps[0].x = p.x; ps[0].y = p.y;
+        ps[0].ox = p.x; ps[0].oy = p.y;
 
-      s.badgeOmega += badgeAlpha * dt;
-      s.badgeRot   += s.badgeOmega * dt;
+        for (let i = 0; i < SEGMENTS; i++) {
+          const a  = ps[i];
+          const b  = ps[i + 1];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < 0.001) continue;
 
-      // ── Posição do crachá ────────────────────────────────────────────────
-      const bx = p.x + Math.sin(s.angle) * CORD_LENGTH;
-      const by = p.y + Math.cos(s.angle) * CORD_LENGTH;
-      const bw = badge.offsetWidth;
+          const diff  = (d - SEG_LEN) / d * STIFF;
+          const isEnd = i === SEGMENTS - 1 && isDrag;
 
-      badge.style.left      = `${bx - bw / 2}px`;
-      badge.style.top       = `${by}px`;
-      badge.style.transform = `rotate(${s.badgeRot}rad)`;
+          // Ponto A se move (exceto o pivot)
+          if (i > 0) {
+            a.x += dx * diff * 0.5;
+            a.y += dy * diff * 0.5;
+          }
+          // Ponto B se move (exceto quando o badge está sendo arrastado)
+          if (!isEnd) {
+            b.x -= dx * diff * 0.5;
+            b.y -= dy * diff * 0.5;
+          }
+        }
+      }
 
-      // ── Desenhar cordão ──────────────────────────────────────────────────
+      // ── Posicionar e rotacionar o badge ────────────────────────────────
+      const last = ps[SEGMENTS];
+      const prev = ps[SEGMENTS - 1];
+      const bw   = badge.offsetWidth;
+      const segDx = last.x - prev.x;
+      const segDy = last.y - prev.y;
+      const angle = Math.atan2(segDx, Math.max(segDy, 0.01)); // ângulo da última corda
+
+      badge.style.left      = `${last.x - bw / 2}px`;
+      badge.style.top       = `${last.y}px`;
+      badge.style.transform = `rotate(${angle}rad)`;
+
+      // ── Desenhar corda ────────────────────────────────────────────────────
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Cordão mais tensionado quando rápido, mais flácido quando lento
-      const speed = Math.abs(s.omega);
-      const sag   = Math.max(3, 14 - speed * 12) + Math.abs(s.angle) * 16;
-      const cpx   = (p.x + bx) / 2;
-      const cpy   = (p.y + by) / 2 + sag;
+      const drawCord = (offsetY: number, style: string | CanvasGradient, width: number) => {
+        ctx.strokeStyle = style;
+        ctx.lineWidth   = width;
+        ctx.lineCap     = "round";
+        ctx.lineJoin    = "round";
+        ctx.beginPath();
+        ctx.moveTo(ps[0].x + PAD, ps[0].y + PAD + offsetY);
+        for (let i = 1; i < SEGMENTS; i++) {
+          const mx = (ps[i].x + ps[i + 1].x) / 2 + PAD;
+          const my = (ps[i].y + ps[i + 1].y) / 2 + PAD + offsetY;
+          ctx.quadraticCurveTo(ps[i].x + PAD, ps[i].y + PAD + offsetY, mx, my);
+        }
+        ctx.lineTo(last.x + PAD, last.y + PAD + offsetY);
+        ctx.stroke();
+      };
 
-      // Sombra do cordão
-      ctx.strokeStyle = "rgba(50,15,100,0.45)";
-      ctx.lineWidth   = 4.5;
-      ctx.lineCap     = "round";
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y + 1.8);
-      ctx.quadraticCurveTo(cpx, cpy + 1.8, bx, by + 1.8);
-      ctx.stroke();
+      // Sombra
+      drawCord(2, "rgba(40,10,90,0.50)", 5);
 
-      // Cordão principal — gradiente violeta
-      const grad = ctx.createLinearGradient(p.x, p.y, bx, by);
-      grad.addColorStop(0, "rgba(196,181,253,0.85)");
-      grad.addColorStop(0.5, "rgba(139,92,246,0.70)");
-      grad.addColorStop(1, "rgba(109,40,217,0.52)");
-      ctx.strokeStyle = grad;
-      ctx.lineWidth   = 2.8;
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      ctx.quadraticCurveTo(cpx, cpy, bx, by);
-      ctx.stroke();
+      // Cordão principal — gradiente do pivot ao badge
+      const grad = ctx.createLinearGradient(
+        ps[0].x + PAD, ps[0].y + PAD,
+        last.x + PAD,  last.y + PAD,
+      );
+      grad.addColorStop(0,   "rgba(196,181,253,0.88)");
+      grad.addColorStop(0.5, "rgba(139,92,246,0.72)");
+      grad.addColorStop(1,   "rgba(109,40,217,0.54)");
+      drawCord(0, grad, 3);
 
-      // Rebite do pivô (3 círculos concêntricos)
-      ctx.fillStyle = "rgba(167,139,250,0.22)";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
-      ctx.fill();
-
+      // Rebite do teto
+      const cx = ps[0].x + PAD;
+      const cy = ps[0].y + PAD;
+      ctx.fillStyle = "rgba(167,139,250,0.20)";
+      ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "rgba(167,139,250,0.60)";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 5.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(235,225,255,0.95)";
+      ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI * 2); ctx.fill();
 
-      ctx.fillStyle = "rgba(235,225,255,0.92)";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2);
-      ctx.fill();
-
-      rafRef.current = requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(animate);
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       ro.disconnect();
-      container.removeEventListener("pointerdown",   onPointerDown);
-      container.removeEventListener("pointermove",   onPointerMove);
-      container.removeEventListener("pointerup",     onPointerUp);
-      container.removeEventListener("pointercancel", onPointerUp);
+      wrap.removeEventListener("pointerdown",   onPointerDown);
+      wrap.removeEventListener("pointermove",   onPointerMove);
+      wrap.removeEventListener("pointerup",     onPointerUp);
+      wrap.removeEventListener("pointercancel", onPointerUp);
       document.body.style.cursor = "";
     };
   }, []);
 
   return (
     <div
-      ref={containerRef}
+      ref={wrapRef}
       className="relative w-full select-none"
-      style={{ height: "500px", touchAction: "none" }}
+      style={{ height: "520px", touchAction: "none", overflow: "visible" }}
     >
-      {/* Canvas do cordão */}
+      {/* Canvas posicionado com padding extra para a corda não cortar */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 pointer-events-none"
+        className="absolute pointer-events-none"
       />
 
       {/* Crachá */}
@@ -259,7 +273,7 @@ export function PhysicsBadge() {
                 width: "12px",
                 height: "8px",
                 borderRadius: "4px",
-                background: "rgba(0,0,0,0.5)",
+                background: "rgba(0,0,0,0.50)",
                 boxShadow: "inset 0 1px 3px rgba(0,0,0,0.7)",
               }}
             />
@@ -277,7 +291,6 @@ export function PhysicsBadge() {
               "0 30px 80px rgba(0,0,0,0.78), 0 0 0 1px rgba(255,255,255,0.04) inset",
           }}
         >
-          {/* Barra de cor */}
           <div
             style={{
               height: "3px",
@@ -285,7 +298,6 @@ export function PhysicsBadge() {
             }}
           />
 
-          {/* Foto */}
           <div style={{ padding: "10px 10px 6px" }}>
             <div
               style={{
@@ -307,7 +319,6 @@ export function PhysicsBadge() {
             </div>
           </div>
 
-          {/* Info */}
           <div style={{ padding: "4px 12px 14px", textAlign: "center" }}>
             <p
               style={{
@@ -321,13 +332,7 @@ export function PhysicsBadge() {
             >
               Adriano Junior
             </p>
-            <p
-              style={{
-                color: "rgba(167,139,250,0.65)",
-                fontSize: "10px",
-                margin: "3px 0 0",
-              }}
-            >
+            <p style={{ color: "rgba(167,139,250,0.65)", fontSize: "10px", margin: "3px 0 0" }}>
               Frontend Developer
             </p>
 
@@ -356,7 +361,6 @@ export function PhysicsBadge() {
               </span>
             </div>
 
-            {/* Código de barras decorativo */}
             <div
               style={{
                 marginTop: "10px",
