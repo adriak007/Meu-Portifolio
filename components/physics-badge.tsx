@@ -167,16 +167,21 @@ export function PhysicsBadge() {
       }
 
       // ── Posicionar e rotacionar o badge ────────────────────────────────
-      const last = ps[SEGMENTS];
-      const prev = ps[SEGMENTS - 1];
-      const bw   = badge.offsetWidth;
+      const last  = ps[SEGMENTS];
+      const prev  = ps[SEGMENTS - 1];
+      const bw    = badge.offsetWidth;
       const segDx = last.x - prev.x;
       const segDy = last.y - prev.y;
-      const angle = Math.atan2(segDx, Math.max(segDy, 0.01)); // ângulo da última corda
+      const angle = Math.atan2(segDx, segDy);
 
-      badge.style.left      = `${last.x - bw / 2}px`;
-      badge.style.top       = `${last.y}px`;
-      badge.style.transform = `rotate(${angle}rad)`;
+      // A presilha tem 18px de altura; o furo fica a ~9px do topo do badge.
+      // O ponto da corda (last) deve coincidir exatamente com o centro do furo.
+      const CLIP_Y = 9; // distância do topo do badge até o centro do furo
+
+      badge.style.left            = `${last.x - bw / 2}px`;
+      badge.style.top             = `${last.y - CLIP_Y}px`;
+      badge.style.transformOrigin = `${bw / 2}px ${CLIP_Y}px`; // gira em torno do furo
+      badge.style.transform       = `rotate(${angle}rad)`;
 
       // ── Desenhar corda ────────────────────────────────────────────────────
       ctx.clearRect(0, 0, canvas.width, canvas.height);
