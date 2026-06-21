@@ -5,16 +5,18 @@ import { useRef, useEffect } from "react";
 import { BASE_PATH } from "@/lib/base-path";
 
 // ── Constantes de física ──────────────────────────────────────────────────────
-const SEGMENTS    = 14;     // quantos segmentos na corda
-const SEG_LEN      = 34;    // comprimento natural de cada segmento (px)
-const GRAVITY       = 1800; // px/s²
-const DAMP          = 0.955;// amortecimento de cada nó da corda
-const STIFF         = 0.28; // rigidez da restrição (< 0.5 = elástica, > 0.7 = dura)
-const ITERS          = 10;  // iterações de restrição por frame (mais = mais rígida)
-const PAD            = 320; // espaço extra do canvas além do container
-const PIVOT_Y        = -170;// ponto de ancoragem acima da área visível — nunca aparece na tela
-const MAX_STRETCH    = 1.4; // limite de quanto a corda pode esticar ao ser arrastada (×comprimento natural)
-const STRETCH_GIVE   = 0.15;// "elasticidade" residual ao atingir o limite, antes de travar de vez
+const SEGMENTS     = 28;     // quantos segmentos na corda (mais = curva mais suave)
+const SEG_LEN       = 42;    // comprimento natural de cada segmento (px)
+const GRAVITY        = 1800; // px/s²
+const DAMP           = 0.955;// amortecimento de cada nó da corda
+const STIFF          = 0.28; // rigidez da restrição (< 0.5 = elástica, > 0.7 = dura)
+const ITERS           = 12;  // iterações de restrição por frame (mais = mais rígida)
+const PAD_TOP         = 980; // espaço do canvas acima do container — a fita sobe até passar do topo real da janela
+const PAD_SIDE        = 340; // espaço do canvas para os lados/baixo — folga para arrastar
+const PIVOT_Y         = -900;// ponto de ancoragem fixo, bem acima de qualquer topo de viewport plausível
+const MAX_STRETCH     = 1.4; // limite de quanto a corda pode esticar ao ser arrastada (×comprimento natural)
+const STRETCH_GIVE    = 0.15;// "elasticidade" residual ao atingir o limite, antes de travar de vez
+const RIBBON_W        = 15;  // largura visual da fita (estética de crachá de evento)
 
 interface Pt { x: number; y: number; ox: number; oy: number }
 
@@ -34,21 +36,22 @@ export function PhysicsBadge() {
 
     let lastTime = performance.now();
 
-    // Ponto de ancoragem — fica bem acima da área visível (escondido), simulando
-    // um teto fora da tela de onde o cordão de fato sai.
+    // Ponto de ancoragem: fixo, bem acima da área visível — fica de fato fora
+    // da tela (acima do topo real da janela), simulando o cordão pendurado
+    // em algo fora do site.
     const getPivot = () => ({
       x: wrap.offsetWidth / 2,
       y: PIVOT_Y,
     });
 
-    // ── Redimensionar canvas com padding extra ───────────────────────────────
+    // ── Redimensionar canvas (padding bem maior no topo) ─────────────────────
     const syncCanvas = () => {
-      canvas.width  = wrap.offsetWidth  + PAD * 2;
-      canvas.height = wrap.offsetHeight + PAD * 2;
-      canvas.style.left   = `-${PAD}px`;
-      canvas.style.top    = `-${PAD}px`;
-      canvas.style.width  = `${wrap.offsetWidth  + PAD * 2}px`;
-      canvas.style.height = `${wrap.offsetHeight + PAD * 2}px`;
+      canvas.width  = wrap.offsetWidth  + PAD_SIDE * 2;
+      canvas.height = wrap.offsetHeight + PAD_TOP + PAD_SIDE;
+      canvas.style.left   = `-${PAD_SIDE}px`;
+      canvas.style.top    = `-${PAD_TOP}px`;
+      canvas.style.width  = `${wrap.offsetWidth  + PAD_SIDE * 2}px`;
+      canvas.style.height = `${wrap.offsetHeight + PAD_TOP + PAD_SIDE}px`;
     };
     syncCanvas();
 
@@ -61,13 +64,12 @@ export function PhysicsBadge() {
       });
       // Impulso inicial — badge começa com velocidade lateral
       const last = pts.current[SEGMENTS];
-      last.ox = last.x + 5; // move para a esquerda inicialmente
+      last.ox = last.x + 5;
     };
     initRope();
 
     const ro = new ResizeObserver(() => {
       syncCanvas();
-      // Reancora o pivot sem resetar o resto da corda
       const p = getPivot();
       pts.current[0].x  = p.x;
       pts.current[0].y  = p.y;
@@ -86,7 +88,6 @@ export function PhysicsBadge() {
         e.clientY < br.top   - pad || e.clientY > br.bottom + pad
       ) return;
 
-      // Offset do cursor em relação ao ponto de ancoragem do badge (último nó)
       const last = pts.current[SEGMENTS];
       drag.current = {
         on:   true,
@@ -124,7 +125,6 @@ export function PhysicsBadge() {
         ny = p.y + dy * k;
       }
 
-      // Mantém o histórico de posição para que o Verlet calcule a velocidade ao soltar
       last.ox = last.x;
       last.oy = last.y;
       last.x  = nx;
@@ -153,7 +153,7 @@ export function PhysicsBadge() {
 
       // ── Integração Verlet ──────────────────────────────────────────────
       for (let i = 1; i <= SEGMENTS; i++) {
-        if (i === SEGMENTS && isDrag) continue; // badge controlado pelo mouse
+        if (i === SEGMENTS && isDrag) continue;
         const n  = ps[i];
         const vx = (n.x - n.ox) * DAMP;
         const vy = (n.y - n.oy) * DAMP;
@@ -165,7 +165,6 @@ export function PhysicsBadge() {
 
       // ── Restrições de comprimento (relaxação iterativa) ────────────────
       for (let iter = 0; iter < ITERS; iter++) {
-        // Ancorar o ponto de origem (parede/teto)
         ps[0].x = p.x; ps[0].y = p.y;
         ps[0].ox = p.x; ps[0].oy = p.y;
 
@@ -180,12 +179,10 @@ export function PhysicsBadge() {
           const diff  = (d - SEG_LEN) / d * STIFF;
           const isEnd = i === SEGMENTS - 1 && isDrag;
 
-          // Ponto A se move (exceto o pivot)
           if (i > 0) {
             a.x += dx * diff * 0.5;
             a.y += dy * diff * 0.5;
           }
-          // Ponto B se move (exceto quando o badge está sendo arrastado)
           if (!isEnd) {
             b.x -= dx * diff * 0.5;
             b.y -= dy * diff * 0.5;
@@ -201,24 +198,20 @@ export function PhysicsBadge() {
       const segDy = last.y - prev.y;
       const angle = Math.atan2(segDx, segDy);
 
-      // A presilha tem 20px de altura; o furo fica a ~10px do topo do badge.
-      // O ponto da corda (last) deve coincidir exatamente com o centro do furo.
-      const CLIP_Y = 10; // distância do topo do badge até o centro do furo
+      const CLIP_Y = 10; // distância do topo do badge até o centro do furo da presilha
 
       badge.style.left            = `${last.x - bw / 2}px`;
       badge.style.top             = `${last.y - CLIP_Y}px`;
-      badge.style.transformOrigin = `${bw / 2}px ${CLIP_Y}px`; // gira em torno do furo
+      badge.style.transformOrigin = `${bw / 2}px ${CLIP_Y}px`;
       badge.style.transform       = `rotate(${angle}rad)`;
 
-      // ── Desenhar corda ────────────────────────────────────────────────────
+      // ── Desenhar a fita ───────────────────────────────────────────────────
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Recorta o desenho para esconder o ponto de ancoragem: nada acima do
-      // topo do container (y local 0 → PAD em coordenadas do canvas) é visível.
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, PAD, canvas.width, canvas.height - PAD);
-      ctx.clip();
+      // Não precisamos recortar manualmente: o <header> (ancestral) tem
+      // overflow-hidden e coincide com o topo real da página, então tudo o
+      // que desenharmos acima dele já é cortado nativamente pelo navegador —
+      // é exatamente isso que faz a fita parecer vir de fora da tela.
 
       const drawCord = (offsetY: number, style: string | CanvasGradient, width: number) => {
         ctx.strokeStyle = style;
@@ -226,32 +219,39 @@ export function PhysicsBadge() {
         ctx.lineCap     = "round";
         ctx.lineJoin    = "round";
         ctx.beginPath();
-        ctx.moveTo(ps[0].x + PAD, ps[0].y + PAD + offsetY);
+        ctx.moveTo(ps[0].x + PAD_SIDE, ps[0].y + PAD_TOP + offsetY);
         for (let i = 1; i < SEGMENTS; i++) {
-          const mx = (ps[i].x + ps[i + 1].x) / 2 + PAD;
-          const my = (ps[i].y + ps[i + 1].y) / 2 + PAD + offsetY;
-          ctx.quadraticCurveTo(ps[i].x + PAD, ps[i].y + PAD + offsetY, mx, my);
+          const mx = (ps[i].x + ps[i + 1].x) / 2 + PAD_SIDE;
+          const my = (ps[i].y + ps[i + 1].y) / 2 + PAD_TOP + offsetY;
+          ctx.quadraticCurveTo(ps[i].x + PAD_SIDE, ps[i].y + PAD_TOP + offsetY, mx, my);
         }
-        ctx.lineTo(last.x + PAD, last.y + PAD + offsetY);
+        ctx.lineTo(last.x + PAD_SIDE, last.y + PAD_TOP + offsetY);
         ctx.stroke();
       };
 
-      // Sombra
-      drawCord(3, "rgba(40,10,90,0.50)", 9);
+      // Sombra (dá profundidade/volume à fita)
+      drawCord(4, "rgba(25,6,60,0.55)", RIBBON_W + 5);
 
-      // Cordão principal — gradiente do pivot ao badge, bem mais grosso
+      // Base sólida da fita — tom mais escuro nas bordas
+      drawCord(0, "rgba(76,29,149,0.95)", RIBBON_W + 2);
+
+      // Camada do meio — degradê violeta (estética de crachá de evento)
       const grad = ctx.createLinearGradient(
-        ps[0].x + PAD, ps[0].y + PAD,
-        last.x + PAD,  last.y + PAD,
+        ps[0].x + PAD_SIDE, ps[0].y + PAD_TOP,
+        last.x + PAD_SIDE,  last.y + PAD_TOP,
       );
-      grad.addColorStop(0,   "rgba(196,181,253,0.88)");
-      grad.addColorStop(0.5, "rgba(139,92,246,0.72)");
-      grad.addColorStop(1,   "rgba(109,40,217,0.54)");
-      drawCord(0, grad, 6);
+      grad.addColorStop(0,   "rgba(196,181,253,0.92)");
+      grad.addColorStop(0.5, "rgba(139,92,246,0.90)");
+      grad.addColorStop(1,   "rgba(109,40,217,0.85)");
+      drawCord(0, grad, RIBBON_W);
 
-      // Brilho central — dá volume de fita ao cordão
-      drawCord(-1, "rgba(255,255,255,0.18)", 1.6);
+      // Brilho — simula a textura/sheen do tecido
+      drawCord(-3, "rgba(255,255,255,0.30)", 2.5);
 
+      // "Costura" central pontilhada — detalhe de acabamento de crachá real
+      ctx.save();
+      ctx.setLineDash([4, 5]);
+      drawCord(0, "rgba(20,5,45,0.35)", 1.2);
       ctx.restore();
 
       rafRef.current = requestAnimationFrame(tick);
@@ -276,7 +276,7 @@ export function PhysicsBadge() {
       className="relative w-full select-none"
       style={{ height: "560px", touchAction: "none", overflow: "visible" }}
     >
-      {/* Canvas posicionado com padding extra para a corda não cortar */}
+      {/* Canvas posicionado com padding extra para a fita não cortar */}
       <canvas
         ref={canvasRef}
         className="absolute pointer-events-none"
