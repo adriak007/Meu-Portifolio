@@ -2,15 +2,19 @@
 
 import Image from "next/image";
 import { useRef, useEffect } from "react";
+import { BASE_PATH } from "@/lib/base-path";
 
 // ── Constantes de física ──────────────────────────────────────────────────────
-const SEGMENTS = 12;       // quantos segmentos na corda
-const SEG_LEN  = 24;       // comprimento natural de cada segmento (px)
-const GRAVITY  = 1800;     // px/s²
-const DAMP     = 0.955;    // amortecimento de cada nó da corda
-const STIFF    = 0.28;     // rigidez da restrição (< 0.5 = elástica, > 0.7 = dura)
-const ITERS    = 10;       // iterações de restrição por frame (mais = mais rígida)
-const PAD      = 320;      // espaço extra do canvas além do container
+const SEGMENTS    = 14;     // quantos segmentos na corda
+const SEG_LEN      = 34;    // comprimento natural de cada segmento (px)
+const GRAVITY       = 1800; // px/s²
+const DAMP          = 0.955;// amortecimento de cada nó da corda
+const STIFF         = 0.28; // rigidez da restrição (< 0.5 = elástica, > 0.7 = dura)
+const ITERS          = 10;  // iterações de restrição por frame (mais = mais rígida)
+const PAD            = 320; // espaço extra do canvas além do container
+const PIVOT_Y        = -170;// ponto de ancoragem acima da área visível — nunca aparece na tela
+const MAX_STRETCH    = 1.4; // limite de quanto a corda pode esticar ao ser arrastada (×comprimento natural)
+const STRETCH_GIVE   = 0.15;// "elasticidade" residual ao atingir o limite, antes de travar de vez
 
 interface Pt { x: number; y: number; ox: number; oy: number }
 
@@ -30,10 +34,11 @@ export function PhysicsBadge() {
 
     let lastTime = performance.now();
 
-    // Ponto de ancoragem (topo-centro do container)
+    // Ponto de ancoragem — fica bem acima da área visível (escondido), simulando
+    // um teto fora da tela de onde o cordão de fato sai.
     const getPivot = () => ({
       x: wrap.offsetWidth / 2,
-      y: 22,
+      y: PIVOT_Y,
     });
 
     // ── Redimensionar canvas com padding extra ───────────────────────────────
@@ -97,11 +102,33 @@ export function PhysicsBadge() {
       if (!drag.current.on) return;
       const wr   = wrap.getBoundingClientRect();
       const last = pts.current[SEGMENTS];
+
+      const desiredX = (e.clientX - wr.left) - drag.current.offX;
+      const desiredY = (e.clientY - wr.top)  - drag.current.offY;
+
+      // Limita o quanto a corda pode esticar — em vez de puxar infinito,
+      // trava perto do limite (com uma pequena folga residual, tipo "quebra").
+      const p      = getPivot();
+      const dx     = desiredX - p.x;
+      const dy     = desiredY - p.y;
+      const dist   = Math.sqrt(dx * dx + dy * dy);
+      const maxLen = SEGMENTS * SEG_LEN * MAX_STRETCH;
+
+      let nx = desiredX;
+      let ny = desiredY;
+      if (dist > maxLen) {
+        const overshoot = dist - maxLen;
+        const capped     = maxLen + overshoot * STRETCH_GIVE;
+        const k          = capped / dist;
+        nx = p.x + dx * k;
+        ny = p.y + dy * k;
+      }
+
       // Mantém o histórico de posição para que o Verlet calcule a velocidade ao soltar
       last.ox = last.x;
       last.oy = last.y;
-      last.x  = (e.clientX - wr.left)  - drag.current.offX;
-      last.y  = (e.clientY - wr.top)   - drag.current.offY;
+      last.x  = nx;
+      last.y  = ny;
       e.preventDefault();
     };
 
@@ -174,9 +201,9 @@ export function PhysicsBadge() {
       const segDy = last.y - prev.y;
       const angle = Math.atan2(segDx, segDy);
 
-      // A presilha tem 18px de altura; o furo fica a ~9px do topo do badge.
+      // A presilha tem 20px de altura; o furo fica a ~10px do topo do badge.
       // O ponto da corda (last) deve coincidir exatamente com o centro do furo.
-      const CLIP_Y = 9; // distância do topo do badge até o centro do furo
+      const CLIP_Y = 10; // distância do topo do badge até o centro do furo
 
       badge.style.left            = `${last.x - bw / 2}px`;
       badge.style.top             = `${last.y - CLIP_Y}px`;
@@ -185,6 +212,13 @@ export function PhysicsBadge() {
 
       // ── Desenhar corda ────────────────────────────────────────────────────
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Recorta o desenho para esconder o ponto de ancoragem: nada acima do
+      // topo do container (y local 0 → PAD em coordenadas do canvas) é visível.
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, PAD, canvas.width, canvas.height - PAD);
+      ctx.clip();
 
       const drawCord = (offsetY: number, style: string | CanvasGradient, width: number) => {
         ctx.strokeStyle = style;
@@ -203,9 +237,9 @@ export function PhysicsBadge() {
       };
 
       // Sombra
-      drawCord(2, "rgba(40,10,90,0.50)", 5);
+      drawCord(3, "rgba(40,10,90,0.50)", 9);
 
-      // Cordão principal — gradiente do pivot ao badge
+      // Cordão principal — gradiente do pivot ao badge, bem mais grosso
       const grad = ctx.createLinearGradient(
         ps[0].x + PAD, ps[0].y + PAD,
         last.x + PAD,  last.y + PAD,
@@ -213,17 +247,12 @@ export function PhysicsBadge() {
       grad.addColorStop(0,   "rgba(196,181,253,0.88)");
       grad.addColorStop(0.5, "rgba(139,92,246,0.72)");
       grad.addColorStop(1,   "rgba(109,40,217,0.54)");
-      drawCord(0, grad, 3);
+      drawCord(0, grad, 6);
 
-      // Rebite do teto
-      const cx = ps[0].x + PAD;
-      const cy = ps[0].y + PAD;
-      ctx.fillStyle = "rgba(167,139,250,0.20)";
-      ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "rgba(167,139,250,0.60)";
-      ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "rgba(235,225,255,0.95)";
-      ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI * 2); ctx.fill();
+      // Brilho central — dá volume de fita ao cordão
+      drawCord(-1, "rgba(255,255,255,0.18)", 1.6);
+
+      ctx.restore();
 
       rafRef.current = requestAnimationFrame(tick);
     };
@@ -245,7 +274,7 @@ export function PhysicsBadge() {
     <div
       ref={wrapRef}
       className="relative w-full select-none"
-      style={{ height: "520px", touchAction: "none", overflow: "visible" }}
+      style={{ height: "560px", touchAction: "none", overflow: "visible" }}
     >
       {/* Canvas posicionado com padding extra para a corda não cortar */}
       <canvas
@@ -257,16 +286,16 @@ export function PhysicsBadge() {
       <div
         ref={badgeRef}
         className="absolute cursor-grab active:cursor-grabbing"
-        style={{ width: "162px", touchAction: "none", willChange: "transform" }}
+        style={{ width: "184px", touchAction: "none", willChange: "transform" }}
       >
         {/* Presilha */}
         <div className="flex justify-center">
           <div
             style={{
-              width: "30px",
-              height: "18px",
+              width: "34px",
+              height: "20px",
               background: "linear-gradient(135deg, #c4b5fd 0%, #7c3aed 100%)",
-              borderRadius: "6px 6px 3px 3px",
+              borderRadius: "7px 7px 3px 3px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -275,8 +304,8 @@ export function PhysicsBadge() {
           >
             <div
               style={{
-                width: "12px",
-                height: "8px",
+                width: "13px",
+                height: "9px",
                 borderRadius: "4px",
                 background: "rgba(0,0,0,0.50)",
                 boxShadow: "inset 0 1px 3px rgba(0,0,0,0.7)",
@@ -303,20 +332,20 @@ export function PhysicsBadge() {
             }}
           />
 
-          <div style={{ padding: "10px 10px 6px" }}>
+          <div style={{ padding: "11px 11px 7px" }}>
             <div
               style={{
-                borderRadius: "9px",
+                borderRadius: "10px",
                 overflow: "hidden",
                 aspectRatio: "1",
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
               <Image
-                src="/images/foto.jpg"
+                src={`${BASE_PATH}/images/foto.jpg`}
                 alt="Adriano Da Silva Dantas Junior"
-                width={142}
-                height={142}
+                width={162}
+                height={162}
                 className="w-full h-full object-cover"
                 draggable={false}
                 priority
