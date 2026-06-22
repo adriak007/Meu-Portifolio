@@ -5,15 +5,15 @@ import { useRef, useEffect } from "react";
 import { BASE_PATH } from "@/lib/base-path";
 
 // ── Constantes de física ──────────────────────────────────────────────────────
-const SEGMENTS     = 28;     // quantos segmentos na corda (mais = curva mais suave)
-const SEG_LEN       = 42;    // comprimento natural de cada segmento (px)
+const SEGMENTS     = 16;     // quantos segmentos na corda (mais = curva mais suave)
+const SEG_LEN       = 30;    // comprimento natural de cada segmento (px)
 const GRAVITY        = 1800; // px/s²
 const DAMP           = 0.955;// amortecimento de cada nó da corda
 const STIFF          = 0.28; // rigidez da restrição (< 0.5 = elástica, > 0.7 = dura)
 const ITERS           = 12;  // iterações de restrição por frame (mais = mais rígida)
-const PAD_TOP         = 980; // espaço do canvas acima do container — a fita sobe até passar do topo real da janela
+const PAD_TOP         = 480; // espaço do canvas acima do container — a fita sobe até passar do topo real da janela
 const PAD_SIDE        = 340; // espaço do canvas para os lados/baixo — folga para arrastar
-const PIVOT_Y         = -900;// ponto de ancoragem fixo, bem acima de qualquer topo de viewport plausível
+const PIVOT_Y         = -420;// ponto de ancoragem fixo, acima do topo real da página (mas não exagerado)
 const MAX_STRETCH     = 1.4; // limite de quanto a corda pode esticar ao ser arrastada (×comprimento natural)
 const STRETCH_GIVE    = 0.15;// "elasticidade" residual ao atingir o limite, antes de travar de vez
 const RIBBON_W        = 15;  // largura visual da fita (estética de crachá de evento)
