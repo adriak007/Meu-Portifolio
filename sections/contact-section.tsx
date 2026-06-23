@@ -15,8 +15,8 @@ const LINKS = [
   },
   {
     label: "LinkedIn",
-    value: "linkedin.com/in/seu-perfil",
-    href: "https://www.linkedin.com/",
+    value: "linkedin.com/in/adrianodantasjunior",
+    href: "https://www.linkedin.com/in/adrianodantasjunior/",
     external: true,
   },
   {
