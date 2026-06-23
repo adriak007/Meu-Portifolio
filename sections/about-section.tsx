@@ -1,17 +1,17 @@
 import { Container } from "@/components/container";
 
 const STATS = [
-  { value: "4", label: "Projetos concluídos" },
-  { value: "ADS", label: "Formação na FIP" },
-  { value: "2+", label: "Anos estudando" },
-  { value: "1×", label: "Empreendedor" },
+  { value: "4+", label: "Projetos desenvolvidos" },
+  { value: "ADS", label: "Formação na UNIFIP" },
+  { value: "1", label: "Estágio em Front-end" },
+  { value: "10+", label: "Tecnologias no dia a dia" },
 ];
 
 const HIGHLIGHTS = [
-  "Estudante de ADS na FIP",
-  "Atuação como empresário",
-  "Interesse constante em desenvolvimento web",
-  "Busca por interfaces mais elegantes e profissionais",
+  "Estudante de ADS na UNIFIP",
+  "Estágio em desenvolvimento front-end no i5LAB",
+  "Experiência full stack com React, Next.js, Java e Spring Boot",
+  "Busca constante por interfaces mais elegantes e profissionais",
 ];
 
 export function AboutSection() {
@@ -53,21 +53,22 @@ export function AboutSection() {
             style={{ "--rd": "0.12s" } as React.CSSProperties}
           >
             <h2 className="font-display text-3xl font-bold leading-tight tracking-[-0.04em] text-white/90 sm:text-4xl">
-              Formação em tecnologia com mentalidade de negócio.
+              Formação em tecnologia, foco em front-end e produto.
             </h2>
             <div className="mt-8 space-y-5 text-base leading-8 text-white/42 sm:text-lg">
               <p>
-                Sou Adriano Da Silva Dantas Junior, desenvolvedor web e
-                empresário. Gosto de transformar ideias em interfaces com boa
-                estrutura, visual refinado e navegação objetiva — sempre
-                buscando uma entrega mais madura do que o básico.
+                Sou Adriano Da Silva Dantas Junior, desenvolvedor de software
+                com foco em front-end. Gosto de transformar ideias em
+                interfaces com boa estrutura, visual refinado e navegação
+                objetiva — sempre buscando uma entrega mais madura do que o
+                básico.
               </p>
               <p>
-                Atualmente curso Análise e Desenvolvimento de Sistemas na FIP,
-                o que fortalece minha base em lógica, desenvolvimento e boas
-                práticas de software. Minha atuação como empresário amplia a
-                forma como penso produto, posicionamento e valor real para quem
-                vai usar cada projeto.
+                Atualmente curso Análise e Desenvolvimento de Sistemas na
+                UNIFIP, o que fortalece minha base em lógica, arquitetura e
+                boas práticas de software. Já atuei como estagiário de
+                front-end no i5LAB, prototipando telas no Figma e
+                implementando interfaces em React, Next.js e Tailwind CSS.
               </p>
               <p>
                 Meu foco está em evoluir continuamente na criação de interfaces

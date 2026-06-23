@@ -18,9 +18,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Adriano JR | Desenvolvedor Web e Empresario",
+  title: "Adriano JR | Desenvolvedor Front-End",
   description:
-    "Adriano Da Silva Dantas Junior, desenvolvedor web e estudante de ADS na FIP."
+    "Adriano Da Silva Dantas Junior, desenvolvedor de software focado em front-end (React, Next.js, Tailwind) e estudante de ADS na UNIFIP."
 };
 
 export default function RootLayout({

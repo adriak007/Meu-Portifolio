@@ -5,7 +5,7 @@ export type Project = {
   title: string;
   category: string;
   description: string;
-  image: string;
+  image?: string;
   technologies: string[];
   accent: string;
 };
@@ -27,7 +27,6 @@ export const projects: Project[] = [
     category: "Projeto Academico",
     description:
       "Aplicacao criada na disciplina de Autoria Web com foco em clareza de interface, fluxo intuitivo e organizacao de informacoes. O resultado reforca fundamentos de front-end e uma apresentacao mais consistente para uso academico.",
-    image: `${BASE_PATH}/images/notas.png`,
     technologies: ["HTML", "CSS", "UX Basico"],
     accent: "from-indigo-500/25 via-violet-400/10 to-transparent"
   },
@@ -50,5 +49,32 @@ export const projects: Project[] = [
     image: `${BASE_PATH}/images/cook-it.png`,
     technologies: ["React Native", "Gemini API", "TypeScript"],
     accent: "from-orange-400/30 via-amber-300/10 to-transparent"
+  },
+  {
+    id: 5,
+    title: "Mandacaru",
+    category: "Hackathon · IA & Agentes Autônomos",
+    description:
+      "Assistente de IA autônomo idealizado para apoiar agricultores familiares do semiárido nordestino, integrando APIs meteorológicas e LLM para gerar recomendações personalizadas de cultivo e manejo.",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "LLM", "Vercel"],
+    accent: "from-emerald-400/30 via-teal-300/10 to-transparent"
+  },
+  {
+    id: 6,
+    title: "Patos Quest",
+    category: "Jogo · Acessibilidade",
+    description:
+      "Jogo desenvolvido na engine Godot abordando os desafios de acessibilidade e inclusão social na cidade de Patos, PB, transformando um tema social em uma experiência jogável e educativa.",
+    technologies: ["Godot", "GDScript", "Game Design"],
+    accent: "from-sky-400/30 via-blue-300/10 to-transparent"
+  },
+  {
+    id: 7,
+    title: "Gap Bridge",
+    category: "Jogo de Plataforma · Projeto Pessoal",
+    description:
+      "Jogo de plataforma desenvolvido na engine Unity, com foco em mecânicas de física e timing precisos para criar desafios de movimentação fluidos e recompensadores.",
+    technologies: ["Unity", "C#", "Game Design"],
+    accent: "from-rose-400/30 via-pink-300/10 to-transparent"
   }
 ];

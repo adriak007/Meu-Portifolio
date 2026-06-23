@@ -35,7 +35,7 @@ export function ContactSection() {
         {/* ── Header ── */}
         <div className="reveal mb-16">
           <span className="font-mono text-xs tracking-widest text-violet-400/55">
-            03 — Contato
+            04 — Contato
           </span>
           <h2 className="font-display mt-4 text-4xl font-bold tracking-[-0.04em] text-white/90 sm:text-5xl lg:text-6xl">
             Vamos trabalhar{" "}

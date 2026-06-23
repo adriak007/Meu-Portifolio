@@ -4,6 +4,7 @@ import { PhysicsBadge } from "@/components/physics-badge";
 
 const NAV_LINKS = [
   { label: "Sobre", href: "#sobre" },
+  { label: "Habilidades", href: "#habilidades" },
   { label: "Projetos", href: "#projetos" },
   { label: "Contato", href: "#contato" },
 ];
@@ -67,7 +68,7 @@ export function HeroSection() {
               style={{ "--anim-delay": "0s" } as React.CSSProperties}
             >
               <span className="inline-flex items-center gap-2.5 rounded-full border border-violet-500/20 bg-violet-500/[0.07] px-4 py-1.5 font-mono text-xs tracking-wider text-violet-300">
-                Desenvolvedor Web &amp; Empresário
+                Desenvolvedor Front-End · React &amp; Next.js
               </span>
             </div>
 
@@ -89,9 +90,10 @@ export function HeroSection() {
               className="hero-enter mt-8 max-w-[420px] text-lg leading-relaxed text-white/40 sm:text-xl"
               style={{ "--anim-delay": "0.34s" } as React.CSSProperties}
             >
-              Estudante de ADS na FIP, com perfil empreendedor. Crio interfaces
-              modernas unindo clareza visual, boas práticas de front-end e visão
-              de negócio.
+              Estudante de Análise e Desenvolvimento de Sistemas na UNIFIP,
+              com experiência prática em React, Next.js e integração de APIs.
+              Crio interfaces modernas, responsivas e bem estruturadas, unindo
+              boas práticas de código a uma boa experiência de uso.
             </p>
 
             <div
@@ -132,7 +134,7 @@ export function HeroSection() {
               className="hero-enter mt-10 flex flex-wrap gap-2"
               style={{ "--anim-delay": "0.54s" } as React.CSSProperties}
             >
-              {["UI Responsiva", "Código Organizado", "Visão Técnica & Comercial"].map(
+              {["UI Responsiva", "Clean Code", "Full Stack"].map(
                 (item) => (
                   <span
                     key={item}

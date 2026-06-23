@@ -90,7 +90,7 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
               <div className={`absolute inset-x-0 top-0 h-48 bg-gradient-to-br ${project.accent}`} />
               <div className="relative mx-4 mt-4 overflow-hidden rounded-[1.5rem] border border-white/40 bg-white/80">
                 <Image
-                  src={project.image}
+                  src={project.image ?? ""}
                   alt={`Preview do projeto ${project.title}`}
                   width={900}
                   height={620}

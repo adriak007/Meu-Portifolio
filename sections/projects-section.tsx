@@ -10,7 +10,7 @@ export function ProjectsSection() {
         {/* ── Header ── */}
         <div className="reveal mb-16">
           <span className="font-mono text-xs tracking-widest text-violet-400/55">
-            02 — Projetos
+            03 — Projetos
           </span>
           <h2 className="font-display mt-4 text-4xl font-bold tracking-[-0.04em] text-white/90 sm:text-5xl">
             O que eu construí.
@@ -34,16 +34,26 @@ export function ProjectsSection() {
                 {String(project.id).padStart(2, "0")}
               </span>
 
-              {/* Image */}
+              {/* Image / fallback */}
               <div className="relative overflow-hidden">
                 <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-[#0c0c14]" />
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  width={800}
-                  height={500}
-                  className="project-card-img aspect-[16/10] w-full object-cover brightness-[0.65]"
-                />
+                {project.image ? (
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    width={800}
+                    height={500}
+                    className="project-card-img aspect-[16/10] w-full object-cover brightness-[0.65]"
+                  />
+                ) : (
+                  <div
+                    className={`project-card-img flex aspect-[16/10] w-full items-center justify-center bg-gradient-to-br ${project.accent} bg-[#13131f]`}
+                  >
+                    <span className="font-display text-6xl font-bold text-white/[0.12]">
+                      {project.title.charAt(0)}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Content */}
